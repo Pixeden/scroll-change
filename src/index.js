@@ -5,9 +5,8 @@ class ScrollChange {
     classes = 'scrolled',
     offset = 0,
     removeClass = false,
-    endPoint = 0
+    endPoint = null
   } = {}) {
-    
     this.elem = elem
     this.trigger = trigger
     this.classes = classes
@@ -32,34 +31,43 @@ class ScrollChange {
   }
   
   update () {
-    const { elem, endPoint, classes } = this
+    const { 
+      elem, 
+      trigger, 
+      classes, 
+      offset, 
+      removeClass, 
+      endPoint, 
+    } = this
     const elemToChange = this.getNode(elem)
-    const triggerPoint = this.setTrigger(elemToChange)
+    const triggerPoint = this.setPoint(trigger, offset)
     const cls = classes.split(' ')
-    const viewportHeight = this.getViewporHeight()
     const currentScroll = this.latestScrollPosition
     
     this.ticking = false
     
-    if (endPoint !== 0) {
-      if (currentScroll >= triggerPoint && currentScroll <= endPoint) {
-        elemToChange.classList.add(...cls)
+    const classesHandler = (inverted = false) => inverted 
+      ? elemToChange.classList.remove(...cls)
+      : elemToChange.classList.add(...cls)
+    
+    if (endPoint) {
+      const endTrigger = this.setPoint(endPoint)
+      if (currentScroll >= triggerPoint && currentScroll <= endTrigger) {
+        classesHandler(removeClass)
       } else {
-        elemToChange.classList.remove(...cls)
+        classesHandler(!removeClass)
       }
     } else {
       if (currentScroll >= triggerPoint) {
-        elemToChange.classList.add(...cls)
+        classesHandler(removeClass)
       } else {
-        elemToChange.classList.remove(...cls)
+        classesHandler(!removeClass)
       }
     }
   }
   
   requestTick () {
-    if (!this.ticking) {
-      requestAnimationFrame(this.update)
-    }
+    if (!this.ticking) requestAnimationFrame(this.update)
     this.ticking = true
   }
   
@@ -77,30 +85,12 @@ class ScrollChange {
     }
   }
   
-  setTrigger (elem) {
-    const { trigger, offset } = this
-    if (isNaN(trigger)) {
-      const elem = this.getNode(trigger)
-      const diff = elem.getBoundingClientRect().top + this.latestScrollPosition - elem.offsetHeight + offset
-      // console.log({ 
-      //   elemTop: elem.getBoundingClientRect().top,  
-      //   latestScrollPosition: this.latestScrollPosition,
-      //   elemOffsetHeight: elem.offsetHeight,
-      //   offset,
-      //   diff,
-      // });
-      return diff > 0 ? diff : elem.offsetHeight
+  setPoint (elem, offset = 0) {
+    if (isNaN(elem)) {
+      const el = this.getNode(elem)
+      return el.offsetTop - el.scrollTop + el.clientTop /*- el.offsetHeight*/ + offset
     } else {
-      return trigger
-    }
-  }
-  
-  setEndPoint () {
-    const { endPoint } = this
-    if (isNaN(endPoint)) {
-      const elem = this.getNode(endPoint)
-    } else {
-      return endPoint
+      return elem
     }
   }
   
@@ -108,15 +98,6 @@ class ScrollChange {
     return node.nodeType === 1 ? node : document.querySelector(node)
   }
   
-  getViewporHeight () {
-  	return window.innerHeight || document.documentElement.clientHeight
-  }
-  
-  scrollTop () {
-    return window.pageYOffset || (
-      document.documentElement && document.documentElement.scrollTop
-    ) || document.body.scrollTop
-  }
 }
 
 export default ScrollChange
