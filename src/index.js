@@ -88,7 +88,8 @@ class ScrollChange {
   setPoint (elem, offset = 0) {
     if (isNaN(elem)) {
       const el = this.getNode(elem)
-      return el.offsetTop - el.scrollTop + el.clientTop /*- el.offsetHeight*/ + offset
+      const diff = el.getBoundingClientRect().top + this.latestScrollPosition - el.offsetHeight + offset
+      return diff > 0 ? diff : elem.offsetHeight
     } else {
       return elem
     }
