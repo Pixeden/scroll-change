@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scroll Change Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>ScrollChange Demo</h1>
+  </header>
+  
+  <section id=section1></section>
+  <section id=section2></section>
+  <section id=section3></section>
+  <section id=section4></section>
+  <section id=section5></section>
+  
+  <script type="text/javascript" src="scroll-change.min.js"></script>
+  <script type="text/javascript">
+    const titleHandler = new ScrollChange({
+      elem: 'h1',
+      trigger: '#section4',
+      classes: 'titleScrolled',
+      endPoint: '#section5',
+    })
+    titleHandler.init()
+    
+    const headerHandler = new ScrollChange({
+      elem: 'header',
+      trigger: '#section3',
+    })
+    headerHandler.init()
+  </script>
+</body>
+</html>
