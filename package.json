@@ -7,7 +7,7 @@
     "test:watch": "npm t -- -w",
     "test": "mocha src/*.test.js --require babel-register",
     "prebuild": "rimraf dist",
-    "build": "npm-run-all --parallel build:*",
+    "build": "npm-run-all --parallel build:* && cp dist/scroll-change.min.js docs/scroll-change.min.js",
     "build:main": "webpack --output-filename scroll-change.js",
     "build:min": "webpack --output-filename scroll-change.min.js -p",
     "watch": "webpack --output-filename scroll-change.js --progress --colors --watch"
